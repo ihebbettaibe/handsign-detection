@@ -15,8 +15,17 @@
       </div>
       <div class="prediction">
         <h2>Prediction: <span id="predicted-sign">Waiting...</span></h2>
+        <button id="reset-button">Reset Word</button>
       </div>
     </div>
     <script src="script.js"></script>
+    <script>
+      // Add reset button functionality
+      const resetButton = document.getElementById("reset-button");
+      resetButton.addEventListener("click", () => {
+        const predictionText = document.getElementById("predicted-sign");
+        predictionText.textContent = "Waiting...";
+      });
+    </script>
   </body>
 </html>
