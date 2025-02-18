@@ -1,8 +1,9 @@
-# CoMirror
+# Brightsteps
+![DALL_E_2025-02-18_14 02 06_-_A_colorful_and_playful_logo_for__Brightstep___a_website_for_deaf_kids_to_learn _The_logo_should_have_soft__rounded__friendly_typography_with_vibrant_c-removebg-preview (1)](https://github.com/user-attachments/assets/a51e4b48-e561-4478-9305-54cd48c6beca)
 
-![CoMirror Logo](Add a logo if you have one!)
 
-CoMirror is an innovative platform designed to empower deaf children by helping them learn sign language and improve their communication skills through interactive and engaging technology. By leveraging computer vision and machine learning, CoMirror provides real-time sign language detection, personalized feedback, and accessible learning modules tailored to the needs of deaf kids.
+
+Brightsteps is an innovative platform designed to empower deaf children by helping them learn sign language and improve their communication skills through interactive and engaging technology. By leveraging computer vision and machine learning, brightsteps provides real-time sign language detection, personalized feedback, and accessible learning modules tailored to the needs of deaf kids.
 
 ## Features
 - **Real-Time Sign Language Detection**: Uses computer vision and machine learning to detect and interpret hand signs in real-time.
@@ -24,7 +25,7 @@ CoMirror is an innovative platform designed to empower deaf children by helping 
 
 ## Getting Started
 
-Follow these steps to set up and run CoMirror on your local machine.
+Follow these steps to set up and run brightsteps on your local machine.
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -35,5 +36,5 @@ Follow these steps to set up and run CoMirror on your local machine.
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/ihebbettaibe/CoMirror.git
+   git clone https://github.com/ihebbettaibe/Comirror.git
    cd CoMirror
