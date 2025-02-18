@@ -1,31 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Language Detection</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="container">
-      <h1>Real-Time Sign Language Detection</h1>
-      <div class="video-container">
-        <video id="webcam" autoplay></video>
+    <header>
+      <h1>Sign Language Detection</h1>
+    </header>
+    <main>
+      <section id="video-container">
+        <video id="webcam" autoplay playsinline></video>
         <canvas id="outputCanvas"></canvas>
-      </div>
-      <div class="prediction">
-        <h2>Prediction: <span id="predicted-sign">Waiting...</span></h2>
-        <button id="reset-button">Reset Word</button>
-      </div>
-    </div>
+      </section>
+      <section id="detections">
+        <div class="detection-item" id="predicted-sign">
+          <span class="label">Current Sign:</span>
+          <span class="value"></span>
+        </div>
+        <div class="detection-item" id="current-word">
+          <span class="label">Current Word:</span>
+          <span class="value"></span>
+        </div>
+        <div class="detection-item" id="phrase">
+          <span class="label">Phrase:</span>
+          <span class="value"></span>
+        </div>
+      </section>
+      <section id="saved-phrases-section">
+        <h2>Saved Phrases</h2>
+        <div id="saved-phrases"></div>
+        <button id="clearPhrases">Clear Phrases</button>
+      </section>
+    </main>
     <script src="script.js"></script>
-    <script>
-      // Add reset button functionality
-      const resetButton = document.getElementById("reset-button");
-      resetButton.addEventListener("click", () => {
-        const predictionText = document.getElementById("predicted-sign");
-        predictionText.textContent = "Waiting...";
-      });
-    </script>
   </body>
 </html>

@@ -1,16 +1,25 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, WebSocket, WebSocketDisconnect
-from fastapi.responses import JSONResponse
-import mediapipe as mp
-import numpy as np
-import pickle
-from PIL import Image
+import json
+import base64
 import io
 import logging
-import json  # To handle JSON parsing
-import base64  # To handle base64 encoding/decoding
+import pickle
+import numpy as np
+import mediapipe as mp
+from fastapi import FastAPI, File, UploadFile, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image
 
 # Initialize FastAPI
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -42,15 +51,19 @@ def preprocess_image(image_data):
             logger.warning("No hands detected in the image.")
             return None
 
-        data_aux = []
-        for hand_landmarks in results.multi_hand_landmarks:
-            x_ = [landmark.x for landmark in hand_landmarks.landmark]
-            y_ = [landmark.y for landmark in hand_landmarks.landmark]
-            for landmark in hand_landmarks.landmark:
-                data_aux.append(landmark.x - min(x_))
-                data_aux.append(landmark.y - min(y_))
+        # Use only the first detected hand
+        hand_landmarks = results.multi_hand_landmarks[0]
+        x_vals = [landmark.x for landmark in hand_landmarks.landmark]
+        y_vals = [landmark.y for landmark in hand_landmarks.landmark]
+        min_x = min(x_vals)
+        min_y = min(y_vals)
 
-        if len(data_aux) != 42:  # Replace with your model's expected feature size if different
+        data_aux = []
+        for landmark in hand_landmarks.landmark:
+            data_aux.append(landmark.x - min_x)
+            data_aux.append(landmark.y - min_y)
+
+        if len(data_aux) != 42:
             logger.warning(f"Invalid feature vector length: {len(data_aux)}")
             return None
 
@@ -62,28 +75,33 @@ def preprocess_image(image_data):
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+    logger.info("WebSocket connection accepted")
     try:
         while True:
             data = await websocket.receive_text()
-            frame_data = json.loads(data).get("frame")
+            try:
+                json_data = json.loads(data)
+                
+                if "frame" not in json_data:
+                    continue
 
-            # Decode base64 frame and preprocess
-            image_data = base64.b64decode(frame_data)
-            features = preprocess_image(image_data)
+                frame_data = json_data.get("frame")
+                image_data = base64.b64decode(frame_data)
+                features = preprocess_image(image_data)
 
-            if features is None:
-                response = {"prediction": "No hands detected or invalid input"}
-            else:
-                prediction = model.predict([features])
-                predicted_character = labels_dict[int(prediction[0])]
-                response = {"prediction": predicted_character}
+                if features is None:
+                    await websocket.send_json({"prediction": "No hands detected"})
+                else:
+                    prediction = model.predict([features])
+                    predicted_character = labels_dict[int(prediction[0])]
+                    print(f"Predicted: {predicted_character}")  # Debug log
+                    await websocket.send_json({"prediction": predicted_character})
 
-            await websocket.send_json(response)
+            except Exception as e:
+                logger.error(f"Error: {str(e)}")
+                await websocket.send_json({"error": str(e)})
     except WebSocketDisconnect:
-        logger.info("WebSocket disconnected.")
-    except Exception as e:
-        logger.error(f"Error during WebSocket communication: {e}")
-        await websocket.close()
+        logger.info("WebSocket disconnected")
 
 @app.post("/predict/")
 async def predict(file: UploadFile = File(...)):
