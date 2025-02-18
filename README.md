@@ -1,4 +1,4 @@
-# CoMirror
+# Brightsteps
 ![DALL_E_2025-02-18_14 02 06_-_A_colorful_and_playful_logo_for__Brightstep___a_website_for_deaf_kids_to_learn _The_logo_should_have_soft__rounded__friendly_typography_with_vibrant_c-removebg-preview (1)](https://github.com/user-attachments/assets/a51e4b48-e561-4478-9305-54cd48c6beca)
 
 
