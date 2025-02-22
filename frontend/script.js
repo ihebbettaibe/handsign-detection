@@ -1,3 +1,5 @@
+const socket = new WebSocket("ws://127.0.0.1:8000/ws");
+
 const elements = {
     webcam: document.getElementById('webcam'),
     outputCanvas: document.getElementById('outputCanvas'),
@@ -9,13 +11,20 @@ const elements = {
     websocket: socket // if needed elsewhere
 };
 
-const socket = new WebSocket("ws://127.0.0.1:8000/ws");
-
 let currentWord = '';
 let phrase = [];
 let savedPhrases = [];
 let lastSign = '';
 let noSignTimeout = null;
+
+// Capture image from webcam and send to server
+function captureImage() {
+    const context = elements.outputCanvas.getContext('2d');
+    context.drawImage(elements.webcam, 0, 0, elements.outputCanvas.width, elements.outputCanvas.height);
+    const imageData = elements.outputCanvas.toDataURL('image/png');
+    const base64Image = imageData.split(',')[1];
+    socket.send(JSON.stringify({ frame: base64Image }));
+}
 
 // Update detected items with some basic visual feedback
 function updateDetectionBox(element, text) {
@@ -26,7 +35,7 @@ function updateDetectionBox(element, text) {
     }, 300);
 }
 
-// WebSocket message handling (assuming socket initialization is done)
+// WebSocket message handling
 socket.onmessage = (event) => {
     console.log("WebSocket message received:", event.data); // Debug log
     try {
@@ -85,6 +94,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .then(stream => {
             webcam.srcObject = stream;
             webcam.play();
+            setInterval(captureImage, 1000); // Capture image every second
         })
         .catch(err => {
             console.error("Error accessing camera: ", err);
